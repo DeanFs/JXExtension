@@ -26,6 +26,7 @@ Pod::Spec.new do |s|
   end
 
   s.dependency 'SDVersion'
+  s.dependency 'Aspects'
   s.requires_arc = true
   s.ios.deployment_target = '7.0'
 

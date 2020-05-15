@@ -34,7 +34,6 @@
 #import "UIImage+JXImageEffects.h"
 #import "UIScrollView+JXEmptyDataSet.h"
 #import "UIScrollView+JXExtension.h"
-#import "UIScrollView+JXScrollStop.h"
 #import "UITextView+JXLimitText.h"
 #import "UITextField+JXLimitText.h"
 #import "UIView+JXClass.h"

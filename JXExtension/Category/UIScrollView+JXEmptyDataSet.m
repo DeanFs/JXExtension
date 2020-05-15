@@ -8,6 +8,7 @@
 
 #import "UIScrollView+JXEmptyDataSet.h"
 #import <objc/runtime.h>
+#import <Aspects/Aspects.h>
 
 static NSMutableDictionary *_impLookupTable;
 static NSString * const JXSwizzleInfoPointerKey = @"JXSwizzleInfoPointerKey";
@@ -60,90 +61,90 @@ static NSString * const JXSwizzleInfoSelectorKey = @"JXSwizzleInfoSelectorKey";
     self.emptyDataSetView = nil;
 }
 
-#pragma mark - Swizzling
-
-void jx_original_implementation(id self, SEL _cmd) {
-    // Fetch original implementation from lookup table
-    NSString *key = jx_implementationKey(self, _cmd);
-    
-    NSDictionary *swizzleInfo = [_impLookupTable objectForKey:key];
-    NSValue *impValue = [swizzleInfo valueForKey:JXSwizzleInfoPointerKey];
-    
-    IMP impPointer = [impValue pointerValue];
-    
-    // We then inject the additional implementation for reloading the empty dataset
-    // Doing it before calling the original implementation does update the 'isEmptyDataSetVisible' flag on time.
-    [self jx_reloadEmptyDataSet];
-    
-    // If found, call original implementation
-    if (impPointer) {
-        ((void (*)(id, SEL))impPointer)(self, _cmd);
-    }
-}
-
-NSString *jx_implementationKey(id target, SEL selector) {
-    if (!target || !selector) {
-        return nil;
-    }
-    
-    Class baseClass;
-    if ([target isKindOfClass:[UITableView class]]) {
-        baseClass = [UITableView class];
-    } else if ([target isKindOfClass:[UICollectionView class]]) {
-        baseClass = [UICollectionView class];
-    } else if ([target isKindOfClass:[UIScrollView class]]) {
-        baseClass = [UIScrollView class];
-    } else {
-        return nil;
-    }
-    
-    NSString *className = NSStringFromClass([baseClass class]);
-    NSString *selectorName = NSStringFromSelector(selector);
-    return [NSString stringWithFormat:@"%@_%@", className, selectorName];
-}
-
-- (void)swizzleIfPossible:(SEL)selector {
-    // Check if the target responds to selector
-    if (![self respondsToSelector:selector]) {
-        return;
-    }
-    
-    // Create the lookup table
-    if (!_impLookupTable) {
-        _impLookupTable = [[NSMutableDictionary alloc] initWithCapacity:2];
-    }
-    
-    // We make sure that setImplementation is called once per class kind, UITableView or UICollectionView.
-    for (NSDictionary *info in [_impLookupTable allValues]) {
-        Class class = [info objectForKey:JXSwizzleInfoOwnerKey];
-        NSString *selectorName = [info objectForKey:JXSwizzleInfoSelectorKey];
-        
-        if ([selectorName isEqualToString:NSStringFromSelector(selector)]) {
-            if ([self isKindOfClass:class]) {
-                return;
-            }
-        }
-    }
-    
-    NSString *key = jx_implementationKey(self, selector);
-    NSValue *impValue = [[_impLookupTable objectForKey:key] valueForKey:JXSwizzleInfoPointerKey];
-    
-    // If the implementation for this class already exist, skip!!
-    if (impValue || !key) {
-        return;
-    }
-    
-    // Swizzle by injecting additional implementation
-    Method method = class_getInstanceMethod([self class], selector);
-    IMP jx_newImplementation = method_setImplementation(method, (IMP)jx_original_implementation);
-    
-    // Store the new implementation in the lookup table
-    NSDictionary *swizzledInfo = @{JXSwizzleInfoOwnerKey: [self class],
-                                   JXSwizzleInfoSelectorKey: NSStringFromSelector(selector),
-                                   JXSwizzleInfoPointerKey: [NSValue valueWithPointer:jx_newImplementation]};
-    
-    [_impLookupTable setObject:swizzledInfo forKey:key];
-}
+//#pragma mark - Swizzling
+//
+//void jx_original_implementation(id self, SEL _cmd) {
+//    // Fetch original implementation from lookup table
+//    NSString *key = jx_implementationKey(self, _cmd);
+//
+//    NSDictionary *swizzleInfo = [_impLookupTable objectForKey:key];
+//    NSValue *impValue = [swizzleInfo valueForKey:JXSwizzleInfoPointerKey];
+//
+//    IMP impPointer = [impValue pointerValue];
+//
+//    // We then inject the additional implementation for reloading the empty dataset
+//    // Doing it before calling the original implementation does update the 'isEmptyDataSetVisible' flag on time.
+//    [self jx_reloadEmptyDataSet];
+//
+//    // If found, call original implementation
+//    if (impPointer) {
+//        ((void (*)(id, SEL))impPointer)(self, _cmd);
+//    }
+//}
+//
+//NSString *jx_implementationKey(id target, SEL selector) {
+//    if (!target || !selector) {
+//        return nil;
+//    }
+//
+//    Class baseClass;
+//    if ([target isKindOfClass:[UITableView class]]) {
+//        baseClass = [UITableView class];
+//    } else if ([target isKindOfClass:[UICollectionView class]]) {
+//        baseClass = [UICollectionView class];
+//    } else if ([target isKindOfClass:[UIScrollView class]]) {
+//        baseClass = [UIScrollView class];
+//    } else {
+//        return nil;
+//    }
+//
+//    NSString *className = NSStringFromClass([baseClass class]);
+//    NSString *selectorName = NSStringFromSelector(selector);
+//    return [NSString stringWithFormat:@"%@_%@", className, selectorName];
+//}
+//
+//- (void)swizzleIfPossible:(SEL)selector {
+//    // Check if the target responds to selector
+//    if (![self respondsToSelector:selector]) {
+//        return;
+//    }
+//
+//    // Create the lookup table
+//    if (!_impLookupTable) {
+//        _impLookupTable = [[NSMutableDictionary alloc] initWithCapacity:2];
+//    }
+//
+//    // We make sure that setImplementation is called once per class kind, UITableView or UICollectionView.
+//    for (NSDictionary *info in [_impLookupTable allValues]) {
+//        Class class = [info objectForKey:JXSwizzleInfoOwnerKey];
+//        NSString *selectorName = [info objectForKey:JXSwizzleInfoSelectorKey];
+//
+//        if ([selectorName isEqualToString:NSStringFromSelector(selector)]) {
+//            if ([self isKindOfClass:class]) {
+//                return;
+//            }
+//        }
+//    }
+//
+//    NSString *key = jx_implementationKey(self, selector);
+//    NSValue *impValue = [[_impLookupTable objectForKey:key] valueForKey:JXSwizzleInfoPointerKey];
+//
+//    // If the implementation for this class already exist, skip!!
+//    if (impValue || !key) {
+//        return;
+//    }
+//
+//    // Swizzle by injecting additional implementation
+//    Method method = class_getInstanceMethod([self class], selector);
+//    IMP jx_newImplementation = method_setImplementation(method, (IMP)jx_original_implementation);
+//
+//    // Store the new implementation in the lookup table
+//    NSDictionary *swizzledInfo = @{JXSwizzleInfoOwnerKey: [self class],
+//                                   JXSwizzleInfoSelectorKey: NSStringFromSelector(selector),
+//                                   JXSwizzleInfoPointerKey: [NSValue valueWithPointer:jx_newImplementation]};
+//
+//    [_impLookupTable setObject:swizzledInfo forKey:key];
+//}
 
 #pragma mark - Property method
 
@@ -155,11 +156,18 @@ NSString *jx_implementationKey(id target, SEL selector) {
     objc_setAssociatedObject(self, @selector(emptyDataSetDataSource), emptyDataSetDataSource, OBJC_ASSOCIATION_ASSIGN);
     if (emptyDataSetDataSource && [self canDisplay]) {
         // We add method sizzling for injecting -dzn_reloadData implementation to the native -reloadData implementation
-        [self swizzleIfPossible:@selector(reloadData)];
+//        [self swizzleIfPossible:@selector(reloadData)];
+        __weak typeof(self) weakSelf = self;
+        [self aspect_hookSelector:@selector(reloadData) withOptions:AspectPositionAfter usingBlock:^(id<AspectInfo> aspectInfo){
+            [weakSelf jx_reloadEmptyDataSet];
+        } error:nil];
         
         // Exclusively for UITableView, we also inject -dzn_reloadData to -endUpdates
         if ([self isKindOfClass:[UITableView class]]) {
-            [self swizzleIfPossible:@selector(endUpdates)];
+//            [self swizzleIfPossible:@selector(endUpdates)];
+            [self aspect_hookSelector:@selector(endUpdates) withOptions:AspectPositionAfter usingBlock:^(id<AspectInfo> aspectInfo){
+                [weakSelf jx_reloadEmptyDataSet];
+            } error:nil];
         }
     } else {
         if (self.emptyDataSetView) {

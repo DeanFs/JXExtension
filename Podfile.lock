@@ -1,16 +1,20 @@
 PODS:
+  - Aspects (1.4.1)
   - SDVersion (4.3.2)
 
 DEPENDENCIES:
+  - Aspects
   - SDVersion
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
+    - Aspects
     - SDVersion
 
 SPEC CHECKSUMS:
+  Aspects: 7595ba96a6727a58ebcbfc954497fc5d2fdde546
   SDVersion: 18f32c835c1543611fcfae3c6accd9a04b90597e
 
-PODFILE CHECKSUM: 6c7428bce8d6f4ccc56489c22cd176e34fd0679d
+PODFILE CHECKSUM: 135b99632b4fa22c07ec625d359d2b85c17509ec
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.4

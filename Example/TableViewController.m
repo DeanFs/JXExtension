@@ -18,9 +18,9 @@
     [super viewDidLoad];
     self.title = @"StopScroll";
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:NSStringFromClass([UITableViewCell class])];
-    [self.tableView setJx_scrollStopBlock:^{
-        NSLog(@"⚠️滑动停止了");
-    }];
+//    [self.tableView setJx_scrollStopBlock:^{
+//        NSLog(@"⚠️滑动停止了");
+//    }];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:50 inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
     });
