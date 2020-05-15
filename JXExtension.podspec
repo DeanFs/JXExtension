@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "JXExtension"
-  s.version      = "0.4.6"
+  s.version      = "0.4.7"
   s.summary      = "About UIKit Extension."
   s.homepage     = "https://github.com/JeasonL/JXExtension"
   s.license      = "MIT"
