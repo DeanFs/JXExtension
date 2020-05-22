@@ -1,13 +1,13 @@
 Pod::Spec.new do |s|
 
   s.name         = "JXExtension"
-  s.version      = "0.4.7"
+  s.version      = "0.4.8"
   s.summary      = "About UIKit Extension."
-  s.homepage     = "https://github.com/JeasonL/JXExtension"
+  s.homepage     = "https://github.com/DeanFs/JXExtension"
   s.license      = "MIT"
   s.author       = { "Jeason" => "jeason.l@qq.com" }
   s.platform     = :ios
-  s.source       = { :git => "https://github.com/JeasonL/JXExtension.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/DeanFs/JXExtension.git", :tag => "#{s.version}" }
 
   s.public_header_files = 'JXExtension/JXExtension.h'
   s.source_files = 'JXExtension/JXExtension.h'
